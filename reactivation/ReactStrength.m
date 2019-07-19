@@ -65,9 +65,7 @@ nPCs    = sum(lambdas>lMax);
 phi     = lambdas(1:nPCs)./lMax;
 
 if strcmp(method,'ica')
-    scoreRef    = zscore(Qref)*PCs(:,1:nPCs);
-    ICs         = fast_ica(scoreRef,nPCs);
-    PCs         = PCs(:,1:nPCs) * ICs;
+    PCs         = fast_ica(zscore(Qref),nPCs);
 end
 
 scoreTar    = zscore(Qtar)*PCs(:,1:nPCs);
