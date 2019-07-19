@@ -1,20 +1,16 @@
 function [R,phi] = ReactStrength(Qref,Qtar,varargin)
 
-% Computes reactivation strength with various methods.
+% Computes reactivation strength with various methods
 % 
 % USAGE
 %
-% [R,phi] = reactStrength(Qref,Qtar,optionName,optionValue)
+% reactStrength(Qref,Qtar,optionName,optionValue)
 %
 % INPUTS
 %   Qref            binned spike train during the reference epoch (time x
 %                   cells)
 %   Qtar            binned spike train during the target epoch
 %   <options>       optional list of property-value pairs (see table below)
-%
-% OUTPUTS
-%   R               reactivation strength (time x significant components)
-%   phi             encoding strength (normalized eigenvalues)
 %
 %    =========================================================================
 %     Properties    Values
@@ -67,11 +63,11 @@ phi     = lambdas(1:nPCs)./lMax;
 if strcmp(method,'ica')
     scoreRef    = zscore(Qref)*PCs(:,1:nPCs);
     ICs         = fast_ica(scoreRef,nPCs);
-    PCs         = PCs(:,1:nPCs) * ICs;
 end
 
+keyboard
 scoreTar    = zscore(Qtar)*PCs(:,1:nPCs);
 
 % This trick is used to get rid of the diagonal term in react. strength
-tmp     = (zscore(Qtar).^2)*(PCs(:,1:nPCs).^2);
+tmp     = (zscore(Qtar).^2)*(PCs(:,1).^2);
 R       = scoreTar.^2 - tmp;
