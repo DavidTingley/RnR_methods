@@ -1,4 +1,5 @@
 octave
+octave-image
 octave-symbolic
 octave-miscellaneous
 gnuplot
