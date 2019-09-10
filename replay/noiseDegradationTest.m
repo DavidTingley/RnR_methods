@@ -11,9 +11,9 @@ numIterations = 2; % number of sims to run for each parameter set, 3-10 is usual
 inFieldMeanRate = 15; % average FR for distribution of fields, measured in Hz;
 
 % pick one of the following 
-% fieldRateDistro = ones(numCells,1) .* inFieldMeanRate; % everyone is equal
+fieldRateDistro = ones(numCells,1) .* inFieldMeanRate; % everyone is equal
 % fieldRateDistro = ones(numCells,1) .* normrnd(inFieldMeanRate,inFieldMeanRate./3,numCells,1); % gaussian distributed in-field rates
-fieldRateDistro = ones(numCells,1) .* lognrnd(log(inFieldMeanRate),log(inFieldMeanRate)./3,numCells,1); % lognorm distributed in-field rates
+% fieldRateDistro = ones(numCells,1) .* lognrnd(log(inFieldMeanRate),log(inFieldMeanRate)./3,numCells,1); % lognorm distributed in-field rates
 fieldRateDistro(fieldRateDistro>120) = 120; % cap for lognorm distro
 
 
@@ -35,6 +35,8 @@ offsets_rip = {round([(numCells/2-logspace(2,0.8,50)./2)+3 (logspace(0.8,2,50)./
 %% we're going to iterate thru adding noise, and subtracting signal           
 noise_rankOrd = nan(100,100,numIterations);
 noise_integral = nan(100,100,numIterations);
+noise_reactICA = nan(100,100,numIterations);
+noise_reactPCA = nan(100,100,numIterations);
 
 for nSub = 1:100 % subtract one 'real' spike
     for nAdd = 1:100 % add one 'noise' spike
@@ -72,35 +74,68 @@ for nSub = 1:100 % subtract one 'real' spike
 
                     rankOrder{o,oo}(iter) = corr(ord,ord2);
 %                     rankOrder_shuf{o,oo}(iter) = corr(ord_shuf,ord2);
+
+                    %% reactivation analyses
+                    [R,phi] = ReactStrength(rateMaps{oo}',[zeros(numCells,50), rip_smooth, zeros(numCells,50)]','method','pca');
+                    reactPCA{o,oo}(iter) = max(R(:,1));
+                    [R,phi] = ReactStrength(rateMaps{oo}',[zeros(numCells,50), rip_smooth, zeros(numCells,50)]','method','ica');
+                    reactICA{o,oo}(iter) = max(R(:,1));
                 end
                 noise_rankOrd(nSub,nAdd,:) = (rankOrder{o,oo});
                 noise_integral(nSub,nAdd,:) = (integral{o,oo});
+                noise_reactICA(nSub,nAdd,:) = reactICA{o,oo};
+                noise_reactPCA(nSub,nAdd,:) = reactPCA{o,oo};
             end
         end
         
-        subplot(2,2,1)
+        
+        figure(1) % reactivation stuff
+        subplot(3,2,1)
+        imagesc(rip)
+        title('ripple example')
+        
+        subplot(3,2,2)
+        imagesc(rateMaps{oo})
+        title('PF ratemaps')
+        
+        subplot(3,2,3)
         plot(ord,ord2,'.k') % visualize what 'example' events look like as the simulations run
         xlabel('PF order')
         ylabel('ripple order')
         title(['removed: ' num2str(nSub) ', added: ' num2str(nAdd) ', rank order: ' num2str(rankOrder{o,oo}(end))])
         
-        subplot(2,2,2)
+        subplot(3,2,4)
         Pr2Radon(Pr',1); % visualize what 'example' events look like as the simulations run
         title(['removed: ' num2str(nSub) ', added: ' num2str(nAdd) ', radon integral: ' num2str(integral{o,oo}(end))])
         ylabel('decoded position')
         xlabel(['timebins (' num2str(radonBinSize) ' ms)'])
         
-        subplot(2,2,3)
+        subplot(3,2,5)
         imagesc(squeeze(mean(noise_rankOrd,3)));
         title('rank order')
         xlabel('# added "noise" spks')
         ylabel('# removed "real" spks')
         
-        subplot(2,2,4)
+        subplot(3,2,6)
         imagesc(squeeze(mean(noise_integral,3)));
         title('radon integral')
         xlabel('# added "noise" spks')
         ylabel('# removed "real" spks')
+        
+        figure(2) % reactivation stuff
+        
+        subplot(2,2,1)
+        imagesc(squeeze(mean(noise_reactPCA,3)))
+        title('react strength PCA')
+        
+        subplot(2,2,2)
+        imagesc(squeeze(mean(noise_reactICA,3)))
+        title('react strength ICA')
+        
+        subplot(2,2,3)
+        imagesc(squeeze(mean(noise_reactPCA,3))-squeeze(mean(noise_reactICA,3)))
+        title('PCA minus ICA')
+        
         pause(.001)
     end
 end
