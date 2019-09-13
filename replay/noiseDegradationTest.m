@@ -76,9 +76,9 @@ for nSub = 1:100 % subtract one 'real' spike
 %                     rankOrder_shuf{o,oo}(iter) = corr(ord_shuf,ord2);
 
                     %% reactivation analyses
-                    [R,phi] = ReactStrength(rateMaps{oo}',[zeros(numCells,50), rip_smooth, zeros(numCells,50)]','method','pca');
+                    [R,phi] = ReactStrength(rateMaps{oo}',[ rip_smooth]','method','pca');
                     reactPCA{o,oo}(iter) = max(R(:,1));
-                    [R,phi] = ReactStrength(rateMaps{oo}',[zeros(numCells,50), rip_smooth, zeros(numCells,50)]','method','ica');
+                    [R,phi] = ReactStrength(rateMaps{oo}',[ rip_smooth]','method','ica');
                     reactICA{o,oo}(iter) = max(R(:,1));
                 end
                 noise_rankOrd(nSub,nAdd,:) = (rankOrder{o,oo});
