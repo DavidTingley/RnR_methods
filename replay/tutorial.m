@@ -14,13 +14,14 @@ offsets_rate = {round(sigmoid(1:100,50,.09) .* 100)... % Dupret style, reward/en
           1:100 ...                                    % linearly spaced PFs
           randi(100,1,100)};                           % randomly spaced PFs
 
+%A/ I've pre-allocated rateMaps. Sorry, can't let it happen :D
+rateMaps = cell(length(offsets_rate),1);
+
 for o = 1:length(offsets_rate)
     for cell = 1:numCells
         rateMaps{o}(cell,:) = Smooth([zeros(1,offsets_rate{o}(cell)) 1 zeros(1,100-offsets_rate{o}(cell))]',5); 
     end
 end
-
-
 
 
 %% ok, now let's make some ripple examples..
@@ -41,18 +42,17 @@ for o =1:length(offsets_rip)
         imagesc(rip)
         
         % radon transform
-        [Pr prMax] = placeBayes(rip',rateMaps{oo},1);
-        [slope integral{o,oo}(iter)] = Pr2Radon(Pr);
+        [Pr, prMax] = placeBayes(rip',rateMaps{oo},1); %A/ prMax is not used
+        [slope, integral{o,oo}(iter)] = Pr2Radon(Pr);
         
-        shuf = bz_shuffleCircular(rateMaps{oo});
-        [Pr prMax] = placeBayes(rip',shuf,1);
-        [slope_shuffle integral_shuffle{o,oo}(iter)] = Pr2Radon(Pr);
+        shuf        = bz_shuffleCircular(rateMaps{oo});
+        [Pr, prMax] = placeBayes(rip',shuf,1); %A/ prMax is not used
+        [slope_shuffle, integral_shuffle{o,oo}(iter)] = Pr2Radon(Pr); %A/ slope_shuffle is not used
         
         % rank-order correlations
-        [a b ord] = sort_cells(rateMaps{oo});
-        [a b ord_shuf] = sort_cells(shuf);
-        
-        [a b ord2] = sort_cells(rippleEvent{o});
+        [~, ~, ord]      = sort_cells(rateMaps{oo});
+        [~, ~, ord_shuf] = sort_cells(shuf);
+        [~, ~, ord2]     = sort_cells(rippleEvent{o});
         
         rankOrder{o,oo}(iter) = corr(ord,ord2);
         rankOrder_shuf{o,oo}(iter) = corr(ord_shuf,ord2);
@@ -60,7 +60,8 @@ for o =1:length(offsets_rip)
     end
 end
 
-% plotting
+%% Plotting results
+
 conditions = length(offsets_rate)*length(offsets_rip);
 cond = 1;
 for o = 1:length(offsets_rip)
@@ -82,7 +83,7 @@ for o = 1:length(offsets_rip)
         title('radon integral')
         
         subplot(conditions,4,cond*4)
-        histogram(rankOrder{o,oo})
+        histogram(rankOrder{o,oo}) %A/ don't understand this part. it's all the same values in my hands.
         hold on
         histogram(rankOrder_shuf{o,oo})
         title('rank order correlation')
