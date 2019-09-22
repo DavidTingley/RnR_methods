@@ -39,7 +39,7 @@ for o =1:length(offsets_rip)
         rip = rippleEvent{o}; 
         r = randperm(100);
         rip(spks(r(1:80))) = 0;
-        imagesc(rip)
+%         imagesc(rip)
         
         % radon transform
         [Pr, prMax] = placeBayes(rip',rateMaps{oo},1); %A/ prMax is not used
