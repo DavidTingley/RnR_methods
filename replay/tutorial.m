@@ -1,6 +1,11 @@
-% a general script that creates place fields and 'replay' events, then shows 
-% the rank order correlation and radon integral for these events, compared to shuffled data.
-%
+% A general script that creates place fields and 'replay' events, then 
+% shows the rank order correlation and radon integral for these events, 
+% compared to shuffled data. The structure of the data is varied to examine
+% it's impact on these methods. Specifically, linear VS reward biased place
+% field maps, and linear VS sigmoidal population firing rates during
+% 'ripples'. Randomly jittered place fields are also shown for comparison
+% with results expected when no replay is present in the data.
+% 
 % david tingley 2019
 
 
@@ -28,8 +33,8 @@ end
 offsets_rip = {round([(numCells/2-logspace(2,0.8,50)./2)+3 (logspace(0.8,2,50)./2)+numCells/2-3])... 
                1:100};
        
-for o =1:length(offsets_rip)
-    for oo = 1:length(offsets_rate)
+for o = 2%1:length(offsets_rip)
+    for oo = 2%1:length(offsets_rate)
         
     for neuron =1:numCells
        rippleEvent{o}(neuron,:) = ([zeros(1,offsets_rip{o}(neuron)) 1 zeros(1,100-offsets_rip{o}(neuron))]);
@@ -39,22 +44,22 @@ for o =1:length(offsets_rip)
         rip = rippleEvent{o}; 
         r = randperm(100);
         rip(spks(r(1:80))) = 0;
-%         imagesc(rip)
         
         % radon transform
-        [Pr, prMax] = placeBayes(rip',rateMaps{oo},1); %A/ prMax is not used
+        [Pr, ~] = placeBayes(rip',rateMaps{oo},1); %A/ prMax is not used
         [slope, integral{o,oo}(iter)] = Pr2Radon(Pr);
+            
+        if iter == 1 % only calculate once for the actual data
+            % rank-order correlations
+            [~, ~, ord]      = sort_cells(rateMaps{oo});
+            [~, ~, ord2]     = sort_cells(rippleEvent{o});
+            rankOrder{o,oo} = corr(ord,ord2);
+        end
         
         shuf        = bz_shuffleCircular(rateMaps{oo});
-        [Pr, prMax] = placeBayes(rip',shuf,1); %A/ prMax is not used
-        [slope_shuffle, integral_shuffle{o,oo}(iter)] = Pr2Radon(Pr); %A/ slope_shuffle is not used
-        
-        % rank-order correlations
-        [~, ~, ord]      = sort_cells(rateMaps{oo});
+        [Pr, ~] = placeBayes(rip',shuf,1); %A/ prMax is not used
+        [~, integral_shuffle{o,oo}(iter)] = Pr2Radon(Pr); %A/ slope_shuffle is not used
         [~, ~, ord_shuf] = sort_cells(shuf);
-        [~, ~, ord2]     = sort_cells(rippleEvent{o});
-        
-        rankOrder{o,oo}(iter) = corr(ord,ord2);
         rankOrder_shuf{o,oo}(iter) = corr(ord_shuf,ord2);
     end
     end
@@ -81,9 +86,10 @@ for o = 1:length(offsets_rip)
         hold on
         histogram(integral_shuffle{o,oo},[0:.001:.05])    
         title('radon integral')
+        xlim([0 .025])
         
         subplot(conditions,4,cond*4)
-        histogram(rankOrder{o,oo}) %A/ don't understand this part. it's all the same values in my hands.
+        line([rankOrder{o,oo} rankOrder{o,oo}],[0 50],'color','r')
         hold on
         histogram(rankOrder_shuf{o,oo})
         title('rank order correlation')
