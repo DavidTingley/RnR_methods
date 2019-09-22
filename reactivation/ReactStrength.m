@@ -63,7 +63,7 @@ lMax = (1 + sqrt(nCells / size(Qref,1))).^2;
 
 nPCs    = sum(lambdas>lMax);
 phi     = lambdas(1:nPCs)./lMax;
-
+keyboard
 if strcmp(method,'ica')
     PCs         = fast_ica(zscore(Qref),nPCs);
 end

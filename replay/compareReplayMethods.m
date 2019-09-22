@@ -1,12 +1,39 @@
-function [] = bz_compareReplay(spikes,ripples,template,include)
-
-
-% spikes  - buzcode cellinfo file (requires spikes.times, an Nx1 cell
-%           array of timestamps in seconds for each neuron; spikes.UID and spikes.spindices)
-% ripples - buzcode ripples events file (only requires ripples.timestamps,
-%           an Nx2 matrix of start/stop times for each event)
-% template - NxD matrix of N cells and D positions, average firing rates
+function [] = compareReplayMethods(spikes,ripples,template,include)
+% Compares several replay methoeds on the same simulated dataf
+%
+% USAGE
+%
+% [] = compareReplayMethods(spikes,ripples,template,include)
+%
+% INPUTS
+%
+% spikes  - buzcode cellinfo file. A structure that only requires three fields: 
+%              -spikes.times, an Nx1 cell array of timestamps in seconds for each neuron
+%              -spikes.UID, Nx1 vector of unique identifiers for each neuron in session
+%              -spikes.spindices, a sorted vector of [spiketime UID], for all spikes. 
+%                               useful input to some functions and plotting rasters
+% ripples - buzcode ripples events file. A structure that only requires two fields:
+%             -ripples.timestamps, an Nx2 matrix of start/stop times
+%             -ripples.peaks, an Nx1 vector of peak timestamps for each event
+% template -NxD matrix of N cells and D positions, average firing ratemaps
+%           for each cell
 % include - indices (1:N) of cells (place cells) to keep
+%
+% OUTPUTS
+% 
+% none 
+%
+% HELP
+%
+% See bz_GetSpikes from the buzcode repo for help with the spikes/ripples
+%   data structures
+%
+% Copyright (C) 2019 Adrien Peyrache & David Tingley.
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
 
 warning off
 binSize = .01;

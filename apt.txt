@@ -1,7 +1,0 @@
-octave
-octave-image
-octave-symbolic
-octave-statistics
-octave-miscellaneous
-gnuplot
-ghostscript
