@@ -18,8 +18,8 @@ offsets_rate = {round(sigmoid(1:100,50,.09) .* 100)... % Dupret style, reward/en
 rateMaps = cell(length(offsets_rate),1);
 
 for o = 1:length(offsets_rate)
-    for cell = 1:numCells
-        rateMaps{o}(cell,:) = Smooth([zeros(1,offsets_rate{o}(cell)) 1 zeros(1,100-offsets_rate{o}(cell))]',5); 
+    for neuron = 1:numCells
+        rateMaps{o}(neuron,:) = Smooth([zeros(1,offsets_rate{o}(neuron)) 1 zeros(1,100-offsets_rate{o}(neuron))]',5); 
     end
 end
 
@@ -31,8 +31,8 @@ offsets_rip = {round([(numCells/2-logspace(2,0.8,50)./2)+3 (logspace(0.8,2,50)./
 for o =1:length(offsets_rip)
     for oo = 1:length(offsets_rate)
         
-    for cell =1:numCells
-       rippleEvent{o}(cell,:) = ([zeros(1,offsets_rip{o}(cell)) 1 zeros(1,100-offsets_rip{o}(cell))]);
+    for neuron =1:numCells
+       rippleEvent{o}(neuron,:) = ([zeros(1,offsets_rip{o}(neuron)) 1 zeros(1,100-offsets_rip{o}(neuron))]);
     end
     for iter = 1:100
         spks = find(rippleEvent{o}==1);
@@ -69,7 +69,7 @@ for o = 1:length(offsets_rip)
         subplot(conditions,4,cond*4-3)
         imagesc(rateMaps{oo})
         xlabel('position')
-        ylabel('cell #')
+        ylabel('neuron #')
         
         subplot(conditions,4,cond*4-2)
         imagesc(rippleEvent{o})
