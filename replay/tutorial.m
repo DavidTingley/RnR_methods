@@ -33,8 +33,8 @@ end
 offsets_rip = {round([(numCells/2-logspace(2,0.8,50)./2)+3 (logspace(0.8,2,50)./2)+numCells/2-3])... 
                1:100};
        
-for o = 2%1:length(offsets_rip)
-    for oo = 2%1:length(offsets_rate)
+for o = 1:length(offsets_rip)
+    for oo = 1:length(offsets_rate)
         
     for neuron =1:numCells
        rippleEvent{o}(neuron,:) = ([zeros(1,offsets_rip{o}(neuron)) 1 zeros(1,100-offsets_rip{o}(neuron))]);
@@ -46,7 +46,7 @@ for o = 2%1:length(offsets_rip)
         rip(spks(r(1:80))) = 0;
         
         % radon transform
-        [Pr, ~] = placeBayes(rip',rateMaps{oo},1); %A/ prMax is not used
+        [Pr, ~] = placeBayes(rip',rateMaps{oo},1); 
         [slope, integral{o,oo}(iter)] = Pr2Radon(Pr);
             
         if iter == 1 % only calculate once for the actual data
@@ -57,8 +57,8 @@ for o = 2%1:length(offsets_rip)
         end
         
         shuf        = bz_shuffleCircular(rateMaps{oo});
-        [Pr, ~] = placeBayes(rip',shuf,1); %A/ prMax is not used
-        [~, integral_shuffle{o,oo}(iter)] = Pr2Radon(Pr); %A/ slope_shuffle is not used
+        [Pr, ~] = placeBayes(rip',shuf,1); 
+        [~, integral_shuffle{o,oo}(iter)] = Pr2Radon(Pr); 
         [~, ~, ord_shuf] = sort_cells(shuf);
         rankOrder_shuf{o,oo}(iter) = corr(ord_shuf,ord2);
     end
@@ -93,16 +93,13 @@ for o = 1:length(offsets_rip)
         hold on
         histogram(rankOrder_shuf{o,oo})
         title('rank order correlation')
+        xlim([-1 1])
         
         cond = 1+cond;
     end
 end
 
 
-% subplot(4,2,1)
-% imagesc(rateMaps)
-% subplot(4,2,2)
-% plot(mean(rateMaps))
 
 
 
