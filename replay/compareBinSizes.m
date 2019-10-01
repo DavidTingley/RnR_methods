@@ -1,3 +1,9 @@
+% This script uses a decoder to estimate the 'position' when two place
+% cells fire a single spike each at the same moment in time. It assumes
+% these two neurons have different in-field firing rates. It
+% demonstrates that the choice of bin size can determine the decoded
+% position.
+%
 % david tingley 2019
 
 
@@ -50,7 +56,7 @@ for rate =1:50 % 1 to 50 Hz
         xlabel('time (ms')
         ylabel('cell #')
         
-        subplot(2,2,4)
+        subplot(2,1,2)
         plot(bb(25,:))
         ylabel('decoded position')
         xlabel('bin size (ms)')

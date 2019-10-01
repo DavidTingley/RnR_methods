@@ -2,13 +2,25 @@
 % correlation method given a number typical numbers of neurons and events
 % recorded
 %
-% david tingley 2019
+% Copyright (C) 2019 Adrien Peyrache & David Tingley.
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
+
 
 seqRange = 3:10; % the typical number of unique neurons that spike in a given ripple or candidate replay event
 numEvents = 100; % typical number of candidate events to examine, within a single session
+seqLeng = nan(length(seqRange),1);
+seqLengMax = nan(length(seqRange),1);
+numIterations = 1000;
 
 for seqLen = seqRange
-    for iter = 1:1000
+    co = nan(numIterations,numEvents);
+    pval = nan(numIterations,numEvents);
+    
+    for iter = 1:numIterations
         seq1=1:seqLen;
         for rip = 1:numEvents
             seq2 = seq1(randperm(seqLen));
@@ -16,7 +28,7 @@ for seqLen = seqRange
         end
     end
     seqLeng(seqLen) = mean(sum(pval<.05,2)); % average FP rate
-    seqLengmax(seqLen) = max(sum(pval<.05,2)); % the worst case FP rate
+    seqLengMax(seqLen) = max(sum(pval<.05,2)); % the worst case FP rate
 end
 
 subplot(2,2,1)
@@ -25,4 +37,7 @@ histogram(sum(pval<.05,2))
 subplot(2,2,2)
 plot(seqLeng)
 hold on
-plot(seqLengmax)
+plot(seqLengMax)
+
+
+

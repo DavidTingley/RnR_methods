@@ -47,7 +47,7 @@ for o = 1:length(offsets_rip)
         
         % radon transform
         [Pr, ~] = placeBayes(rip',rateMaps{oo},1); 
-        [slope, integral{o,oo}(iter)] = Pr2Radon(Pr);
+        [slope, integral{o,oo}(iter)] = Pr2Radon(Pr');
             
         if iter == 1 % only calculate once for the actual data
             % rank-order correlations
@@ -58,7 +58,7 @@ for o = 1:length(offsets_rip)
         
         shuf        = bz_shuffleCircular(rateMaps{oo});
         [Pr, ~] = placeBayes(rip',shuf,1); 
-        [~, integral_shuffle{o,oo}(iter)] = Pr2Radon(Pr); 
+        [~, integral_shuffle{o,oo}(iter)] = Pr2Radon(Pr'); 
         [~, ~, ord_shuf] = sort_cells(shuf);
         rankOrder_shuf{o,oo}(iter) = corr(ord_shuf,ord2);
     end
@@ -86,7 +86,7 @@ for o = 1:length(offsets_rip)
         hold on
         histogram(integral_shuffle{o,oo},[0:.001:.05])    
         title('radon integral')
-        xlim([0 .025])
+        xlim([0 .03])
         
         subplot(conditions,4,cond*4)
         line([rankOrder{o,oo} rankOrder{o,oo}],[0 50],'color','r')

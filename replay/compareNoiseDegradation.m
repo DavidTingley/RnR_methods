@@ -2,7 +2,13 @@
 % on simulated data where replay events are systematically degraded, either
 % by removed 'real' spikes, or adding spurious 'noise' spikes.
 %
-% david tingley 2019
+% Copyright (C) 2019 Adrien Peyrache & David Tingley.
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
+
 
 %% initial parameters to play with 
 numCells = 100; % # of place fields for simulations
@@ -38,21 +44,21 @@ noise_integral = nan(100,100,numIterations);
 noise_reactICA = nan(100,100,numIterations);
 noise_reactPCA = nan(100,100,numIterations);
 
-for nSub = 1:100 % subtract one 'real' spike
-    for nAdd = 1:100 % add one 'noise' spike
-        for o = 2 %1:length(offsets_rip)            %% this can be varied if you would like a different 'in-ripple' firing rate pattern (see lines 27-28)
-            for oo = 2 %1:length(offsets_rate)      %% this can be varied if you would like a different PF tiling of space (see lines 12-21)
+for nSub = 1:100 % subtract N 'real' spikes
+    for nAdd = 1:100 % add N 'noise' spikes
+        for o = 2        %% this can be varied [1-3] if you would like a different 'in-ripple' firing rate pattern (see lines 27-28)
+            for oo = 2   %% this can be varied [1-3] if you would like a different PF tiling of space (see lines 12-21)
                 for cell =1:numCells
                    rippleEvent{o}(cell,:) = ([zeros(1,offsets_rip{o}(cell)) 1 zeros(1,100-offsets_rip{o}(cell))]);
                 end
-                for iter = 1:numIterations % seems to be enough for averaging, without being too slow
+                for iter = 1:numIterations 
                     spks = find(rippleEvent{o}==1);
                     rip = rippleEvent{o}; 
                     r = randperm(100);
                     rip(spks(r(1:nSub))) = 0;
                     r = randperm(length(rip(:)));
                     rip(r(1:nAdd)) = 1;
-                    keep = find(sum(rip')>0);
+                    keep = find(sum(rip')>0); % used for rank order corr
 
                     %% discretize for radon integral here
                     for c = 1:size(rip,1)
