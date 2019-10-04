@@ -83,9 +83,9 @@ for nSub = 1:100 % subtract N 'real' spikes
 
                     %% reactivation analyses
                     [R,phi] = ReactStrength(rateMaps{oo}',[ rip_smooth]','method','pca');
-                    reactPCA{o,oo}(iter) = max(R(:,1));
+                    reactPCA{o,oo}(iter) = mean(R(:,1));
                     [R,phi] = ReactStrength(rateMaps{oo}',[ rip_smooth]','method','ica');
-                    reactICA{o,oo}(iter) = max(R(:,1));
+                    reactICA{o,oo}(iter) = mean(R(:,1));
                 end
                 noise_rankOrd(nSub,nAdd,:) = (rankOrder{o,oo});
                 noise_integral(nSub,nAdd,:) = (integral{o,oo});
