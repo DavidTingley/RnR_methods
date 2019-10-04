@@ -88,7 +88,7 @@ for event = 1:size(ripples.timestamps,1)
                     % now calc correlations w/ the data...
                     [bayesRankOrder(event) ]= corr([1:length(prMax)]',prMax,'rows','complete');
                     % linear weighted correlation
-                    [linearWeighted(event) outID] = makeBayesWeightedCorr1(Pr,ones(size(Pr,1),1));
+                    [linearWeighted(event),outID] = makeBayesWeightedCorr1(Pr,ones(size(Pr,1),1));
                     
                     % extra info to capture about event
                     nCells(event) = sum(sum(counts(:,keep))>0);
@@ -117,15 +117,15 @@ for event = 1:size(ripples.timestamps,1)
 %                     [a ord_firstSpk] = sortrows(ts_first(idx)','descend');
 %                     clear ts 
                     idx = intersect(find(sum(data)>0),keep);
-                    [a b ord_template] = sort_cells(template(idx,:));
-                    [a ord_firstSpk] = sortrows(data(:,idx)','descend');
-                    [rankOrder(event) pvals(event)] = corr(ord_template,ord_firstSpk,'rows','complete');
+                    [~,~,ord_template] = sort_cells(template(idx,:));
+                    [~,ord_firstSpk] = sortrows(data(:,idx)','descend');
+                    [rankOrder(event),pvals(event)] = corr(ord_template,ord_firstSpk,'rows','complete');
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
                     
                   
                     if sum(sum(spkmat.data(start:stop,:)))> 5 * overlap & sum(~isnan(sum(Pr')))>5
-                        [slope_hpc(event) integral_hpc(event)] = Pr2Radon(Pr');
+                        [slope_hpc(event),integral_hpc(event)] = Pr2Radon(Pr');
                     else 
                         bayesRankOrder(event) = nan;
                         bayesRankOrder_shuf(event,1:100) = nan;

@@ -65,18 +65,18 @@ for nSub = 1:100 % subtract N 'real' spikes
                        rip_smooth(c,:) = rebin(rip(c,:),round(size(rip,2)/radonBinSize)); % 15 ms bins default (change on line 9)
                     end
                     % radon transform
-                    [Pr prMax] = placeBayes(rip_smooth',rateMaps{oo},radonBinSize/1000);
-                    [slope integral{o,oo}(iter)] = Pr2Radon(Pr');
+                    [Pr,prMax] = placeBayes(rip_smooth',rateMaps{oo},radonBinSize/1000);
+                    [slope,integral{o,oo}(iter)] = Pr2Radon(Pr');
 
 %                     shuf = bz_shuffleCircular(rateMaps{oo});
 %                     [Pr_shuf prMax] = placeBayes(rip_smooth',shuf,radonBinSize/1000);
 %                     [slope_shuffle integral_shuffle{o,oo}(iter)] = Pr2Radon(Pr_shuf');
 
                     %% rank-order correlations
-                    [a b ord] = sort_cells(rateMaps{oo}(keep,:));
+                    [~,~,ord] = sort_cells(rateMaps{oo}(keep,:));
 %                     [a b ord_shuf] = sort_cells(shuf(keep,:));
 
-                    [a b ord2] = sort_cells(rip(keep,:));
+                    [~,~,ord2] = sort_cells(rip(keep,:));
 
                     rankOrder{o,oo}(iter) = corr(ord,ord2);
 %                     rankOrder_shuf{o,oo}(iter) = corr(ord_shuf,ord2);
