@@ -39,7 +39,7 @@ warning off
 binSize = .01;
 overlap = 1;
 spkmat = bz_SpktToSpkmat(spikes.times,'overlap',overlap,'binSize',binSize * overlap);
-fig = figure(1);
+
 
 if ~isempty(include)
     keep = intersect(include,find(sum(template')>0)); % uncomment to keep all HPC cells that fired
@@ -66,13 +66,13 @@ for event = 1:size(ripples.timestamps,1)
                             counts(:,spk) = (spkmat.data(start:stop,spk)')';  
                     end
 
-                    % cut 0 and 1 spk count bins from the start/end
-                    while sum(counts(1,keep)) < 2 & size(counts,1) > 1
+                    % cut 0 rate bins from the start/end
+                    while sum(counts(1,keep)) < 0 & size(counts,1) > 1
                        data = data(2:end,:);
                        counts = counts(2:end,:);
                        start = start + 1;
                     end
-                    while sum(counts(end,keep)) < 2 & size(counts,1) > 1
+                    while sum(counts(end,keep)) < 0 & size(counts,1) > 1
                        data = data(1:end-1,:);
                        counts = counts(1:end-1,:);
                        stop = stop-1;
@@ -180,33 +180,33 @@ subplot(4,2,6)
 scatter(linearWeighted,slope_hpc,'.k')
 title('linear weighted VS radon slope')
 
-h = subplot(4,2,7);
+subplot(4,2,7)
+yyaxis left
 imagesc(data')
 colormap(gray)
 hold on
 title(rankOrder(end))
 t = ylabel('position');
 t.Color = 'k';
-
 yyaxis right
 plot(mean(data'),'r')
 t = ylabel('# of spks');
 t.Color = 'r';
-xlabel(['time bins: ' num2str(binSize*1000) ' ms'])
+xlabel('time')
 hold off
+set(gca,'defaultAxesColorOrder',[1 1 1; 1 0 0]);
 
 subplot(4,2,8)
-Pr2Radon(Pr',1);
-% imagesc(Pr')
-% title(linearWeighted(end))
+imagesc(Pr')
+title(linearWeighted(end))
 ylabel('position')
-xlabel(['time bins: ' num2str(binSize*1000) ' ms'])
-hold off
+xlabel('time')
+
 
 pause(.01)
 clear data counts;
 event
-delete(h)
+
 
 end
 
