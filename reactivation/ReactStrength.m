@@ -66,6 +66,10 @@ phi     = lambdas(1:nPCs)./lMax;
 
 if strcmp(method,'ica')
     PCs         = fast_ica(zscore(Qref),nPCs);
+    
+    %Here we renormalize ICs so that react strength can be compared with
+    %PCA.
+    PCs = PCs./repmat(sqrt(sum(PCs.^2)),[size(PCs,1) 1 ]);
 end
 
 scoreTar    = zscore(Qtar)*PCs(:,1:nPCs);

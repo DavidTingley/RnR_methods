@@ -11,11 +11,23 @@
 
 
 %% initial parameters to play with 
-numCells = 100; % # of place fields for simulations
-radonBinSize = 15; % 15 ms bins for the Bayesian method
-numIterations = 2; % number of sims to run for each parameter set, 3-10 is usually a good range (smaller #s run faster)
-inFieldMeanRate = 15; % average FR for distribution of fields, measured in Hz;
+% # of place fields for simulations
+numCells = 100; 
+% number of spikes to add or remove will be multiplicative of noiseStep. Should not be greater than 50. (as up to 100 spikes are added)
+% The smaller (minimum: 1) the longer the simulation.
+noiseStep = 10; 
+ % 15 ms bins for the Bayesian method
+radonBinSize = 15;
+% number of sims to run for each parameter set, 3-10 is usually a good range (smaller #s run faster)
+numIterations = 2; 
+% average FR for distribution of fields, measured in Hz;
+inFieldMeanRate = 15; 
 
+noiseBins = round(90/noiseStep)+1;
+if noiseBins <2
+    error('noiseStep is too small');
+end
+   
 % pick one of the following 
 fieldRateDistro = ones(numCells,1) .* inFieldMeanRate; % everyone is equal
 % fieldRateDistro = ones(numCells,1) .* normrnd(inFieldMeanRate,inFieldMeanRate./3,numCells,1); % gaussian distributed in-field rates
@@ -39,13 +51,18 @@ offsets_rip = {round([(numCells/2-logspace(2,0.8,50)./2)+3 (logspace(0.8,2,50)./
                1:100}; % linearly spaced spikes within each ripple
 
 %% we're going to iterate thru adding noise, and subtracting signal           
-noise_rankOrd = nan(100,100,numIterations);
-noise_integral = nan(100,100,numIterations);
-noise_reactICA = nan(100,100,numIterations);
-noise_reactPCA = nan(100,100,numIterations);
+noise_rankOrd = nan(noiseBins,noiseBins,numIterations);
+noise_integral = nan(noiseBins,noiseBins,numIterations);
+noise_reactICA = nan(noiseBins,noiseBins,numIterations);
+noise_reactPCA = nan(noiseBins,noiseBins,numIterations);
 
-for nSub = 1:100 % subtract N 'real' spikes
-    for nAdd = 1:100 % add N 'noise' spikes
+
+figure(1),clf
+figure(2),clf
+figure(3),clf
+
+for nSub = 0:noiseBins-1 % subtract N 'real' spikes
+    for nAdd = 0:noiseBins-1 % add N 'noise' spikes
         for o = 2        %% this can be varied [1-3] if you would like a different 'in-ripple' firing rate pattern (see lines 27-28)
             for oo = 2   %% this can be varied [1-3] if you would like a different PF tiling of space (see lines 12-21)
                 for cell =1:numCells
@@ -55,9 +72,9 @@ for nSub = 1:100 % subtract N 'real' spikes
                     spks = find(rippleEvent{o}==1);
                     rip = rippleEvent{o}; 
                     r = randperm(100);
-                    rip(spks(r(1:nSub))) = 0;
+                    rip(spks(r(1:nSub*noiseStep))) = 0;
                     r = randperm(length(rip(:)));
-                    rip(r(1:nAdd)) = 1;
+                    rip(r(1:nAdd*noiseStep)) = 1;
                     keep = find(sum(rip')>0); % used for rank order corr
 
                     %% discretize for radon integral here
@@ -82,67 +99,111 @@ for nSub = 1:100 % subtract N 'real' spikes
 %                     rankOrder_shuf{o,oo}(iter) = corr(ord_shuf,ord2);
 
                     %% reactivation analyses
-                    [R,phi] = ReactStrength(rateMaps{oo}',[ rip_smooth]','method','pca');
+                    R = ReactStrength(rateMaps{oo}',[ rip_smooth]','method','pca');
                     reactPCA{o,oo}(iter) = mean(R(:,1));
-                    [R,phi] = ReactStrength(rateMaps{oo}',[ rip_smooth]','method','ica');
+                    R = ReactStrength(rateMaps{oo}',[ rip_smooth]','method','ica');
                     reactICA{o,oo}(iter) = mean(R(:,1));
                 end
-                noise_rankOrd(nSub,nAdd,:) = (rankOrder{o,oo});
-                noise_integral(nSub,nAdd,:) = (integral{o,oo});
-                noise_reactICA(nSub,nAdd,:) = reactICA{o,oo};
-                noise_reactPCA(nSub,nAdd,:) = reactPCA{o,oo};
+                noise_rankOrd(nSub+1,nAdd+1,:) = (rankOrder{o,oo});
+                noise_integral(nSub+1,nAdd+1,:) = (integral{o,oo});
+                noise_reactICA(nSub+1,nAdd+1,:) = reactICA{o,oo};
+                noise_reactPCA(nSub+1,nAdd+1,:) = reactPCA{o,oo};
             end
         end
         
-        
-        figure(1) % reactivation stuff
-        subplot(3,2,1)
+        %Result of each stimulation
+        figure(1)
+        subplot(2,2,1)
         imagesc(rip)
         title('ripple example')
         
-        subplot(3,2,2)
+        subplot(2,2,2)
         imagesc(rateMaps{oo})
         title('PF ratemaps')
         
-        subplot(3,2,3)
+        subplot(2,2,3)
         plot(ord,ord2,'.k') % visualize what 'example' events look like as the simulations run
         xlabel('PF order')
         ylabel('ripple order')
         title(['removed: ' num2str(nSub) ', added: ' num2str(nAdd) ', rank order: ' num2str(rankOrder{o,oo}(end))])
         
-        subplot(3,2,4)
+        subplot(2,2,4)
         Pr2Radon(Pr',1); % visualize what 'example' events look like as the simulations run
         title(['removed: ' num2str(nSub) ', added: ' num2str(nAdd) ', radon integral: ' num2str(integral{o,oo}(end))])
         ylabel('decoded position')
         xlabel(['timebins (' num2str(radonBinSize) ' ms)'])
         
-        subplot(3,2,5)
+        % Difference in Replay
+        figure(2)
+        subplot(2,2,1)
         imagesc(squeeze(mean(noise_rankOrd,3)));
         title('rank order')
         xlabel('# added "noise" spks')
         ylabel('# removed "real" spks')
+        axis square
+        colorbar
+        xt = get(gca,'XTick');
+        set(gca,'XTickLabel',(xt-1)*noiseStep)
+        yt = get(gca,'XTick');
+        set(gca,'YTickLabel',(yt-1)*noiseStep)     
         
-        subplot(3,2,6)
+        subplot(2,2,2)
         imagesc(squeeze(mean(noise_integral,3)));
         title('radon integral')
         xlabel('# added "noise" spks')
         ylabel('# removed "real" spks')
-        
-        figure(2) % reactivation stuff
-        
-        subplot(2,2,1)
-        imagesc(squeeze(mean(noise_reactPCA,3)))
-        title('react strength PCA')
-        
-        subplot(2,2,2)
-        imagesc(squeeze(mean(noise_reactICA,3)))
-        title('react strength ICA')
+        axis square
+        colorbar
+        xt = get(gca,'XTick');
+        set(gca,'XTickLabel',(xt-1)*noiseStep)
+        yt = get(gca,'XTick');
+        set(gca,'YTickLabel',(yt-1)*noiseStep)     
         
         subplot(2,2,3)
         imagesc(squeeze(mean(noise_reactPCA,3))-squeeze(mean(noise_reactICA,3)))
         title('PCA minus ICA')
+        axis square
+        colorbar
+        xt = get(gca,'XTick');
+        set(gca,'XTickLabel',(xt-1)*noiseStep)
+        yt = get(gca,'XTick');
+        set(gca,'YTickLabel',(yt-1)*noiseStep)     
         
-        pause(.001)
+        % Difference in Reactivation
+        figure(3)
+        
+        subplot(2,2,1)
+        imagesc(squeeze(mean(noise_reactPCA,3)))
+        title('react strength PCA')
+        axis square
+        colorbar
+        xt = get(gca,'XTick');
+        set(gca,'XTickLabel',(xt-1)*noiseStep)
+        yt = get(gca,'XTick');
+        set(gca,'YTickLabel',(yt-1)*noiseStep)     
+        
+        subplot(2,2,2)
+        imagesc(squeeze(mean(noise_reactICA,3)))
+        title('react strength ICA')
+        axis square
+        colorbar
+        xt = get(gca,'XTick');
+        set(gca,'XTickLabel',(xt-1)*noiseStep)
+        yt = get(gca,'XTick');
+        set(gca,'YTickLabel',(yt-1)*noiseStep)     
+        
+        subplot(2,2,3)
+        imagesc(squeeze(mean(noise_reactPCA,3))-squeeze(mean(noise_reactICA,3)))
+        title('PCA minus ICA')
+        axis square
+        colorbar
+        xt = get(gca,'XTick');
+        set(gca,'XTickLabel',(xt-1)*noiseStep)
+        yt = get(gca,'XTick');
+        set(gca,'YTickLabel',(yt-1)*noiseStep)     
+        
+        drawnow
+        %pause(.001)
     end
 end
 
