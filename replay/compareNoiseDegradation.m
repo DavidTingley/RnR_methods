@@ -31,9 +31,9 @@ if noiseBins <2
 end
    
 % pick one of the following 
-fieldRateDistro = ones(numCells,1) .* inFieldMeanRate; % everyone is equal
+% fieldRateDistro = ones(numCells,1) .* inFieldMeanRate; % everyone is equal
 % fieldRateDistro = ones(numCells,1) .* normrnd(inFieldMeanRate,inFieldMeanRate./3,numCells,1); % gaussian distributed in-field rates
-% fieldRateDistro = ones(numCells,1) .* lognrnd(log(inFieldMeanRate),log(inFieldMeanRate)./3,numCells,1); % lognorm distributed in-field rates
+fieldRateDistro = ones(numCells,1) .* lognrnd(log(inFieldMeanRate),log(inFieldMeanRate)./3,numCells,1); % lognorm distributed in-field rates
 fieldRateDistro(fieldRateDistro>120) = 120; % cap for lognorm distro
 
 
