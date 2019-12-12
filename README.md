@@ -16,7 +16,7 @@ Some of these methods and tests were described in <a href="" target="_blank">Tin
 - 'ReactStrength', to compute reactivation (i.e. 0-lag neuronal correlation) with PCA or ICA.
 Type 'help ReactStrength' for mor info
 
-## Repaly
+## Replay
 
 ## Compare
 - 'compareReplayMethods', to compare different reactivation methods (Fig. 3 in <a href="" target="_blank">Tingley&Peyrache</a>)
