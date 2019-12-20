@@ -5,8 +5,13 @@
 % field maps, and linear VS sigmoidal population firing rates during
 % 'ripples'. Randomly jittered place fields are also shown for comparison
 % with results expected when no replay is present in the data.
-% 
-% david tingley 2019
+
+% Copyright (C) 2019 Adrien Peyrache & David Tingley.
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
 
 
 %% initial parameters

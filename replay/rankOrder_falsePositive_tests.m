@@ -14,7 +14,7 @@ seqRange = 3:10; % the typical number of unique neurons that spike in a given ri
 numEvents = 100; % typical number of candidate events to examine, within a single session
 seqLeng = nan(length(seqRange),1);
 seqLengMax = nan(length(seqRange),1);
-numIterations = 1000;
+numIterations = 100;
 
 for seqLen = seqRange
     co = nan(numIterations,numEvents);

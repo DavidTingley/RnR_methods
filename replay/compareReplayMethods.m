@@ -1,5 +1,5 @@
 function [] = compareReplayMethods(spikes,ripples,template,include)
-% Compares several replay methoeds on the same simulated dataf
+% Compares several replay methoeds on the same simulated data
 %
 % USAGE
 %
