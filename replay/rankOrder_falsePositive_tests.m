@@ -16,19 +16,28 @@ seqLeng = nan(length(seqRange),1);
 seqLengMax = nan(length(seqRange),1);
 numIterations = 100;
 
-for seqLen = seqRange
+for seqLen = seqRange %% iterate through sequences of different length
     co = nan(numIterations,numEvents);
     pval = nan(numIterations,numEvents);
     
-    for iter = 1:numIterations
-        seq1=1:seqLen;
+    parfor iter = 1:numIterations
+        seq1=1:seqLen; % this is our 'target' sequence (i.e. behavioral template)
         for rip = 1:numEvents
             seq2 = seq1(randperm(seqLen));
             [co(iter,rip),pval(iter,rip)] = corr(seq1',seq2');
+            
+            %% simulate some 'within-event' shuffling
+            for sh = 1:100
+                [co_shuf(sh,iter,rip),pval_shuf(sh,iter,rip)] = corr(seq1',seq2(randperm(seqLen))');
+            end
         end
     end
+    % across event
     seqLeng(seqLen) = mean(sum(pval<.05,2)); % average FP rate
     seqLengMax(seqLen) = max(sum(pval<.05,2)); % the worst case FP rate
+    % within event
+    seqLeng_within(seqLen) = mean(mean(sum(pval_shuf<.05,3))); % average FP rate
+    seqLengMax_within(seqLen) = max(mean(sum(pval_shuf<.05,3))); % the worst case FP rate
 end
 
 subplot(2,2,1)
