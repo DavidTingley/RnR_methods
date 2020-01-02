@@ -9,7 +9,7 @@ Some of these methods and tests were described in <a href="" target="_blank">Tin
 - [License](#license)
 
 ## Installation
-- Clone this repo to your local machine using `https://github.com/davidtingley/RnR_metthods`
+- Clone this repo to your local machine using `https://github.com/davidtingley/RnR_methods`
 - Run `addpath(genpath(pwd))` from the \RnR_methods directory
 
 ## Reactivation
