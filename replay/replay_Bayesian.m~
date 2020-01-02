@@ -1,4 +1,4 @@
-function [replayScore_bayes_linearWeighted, replayScore_bayes_radon] = replay_Bayesian(spikes,ripples,template,include)
+function [replayScores] = replay_Bayesian(spikes,ripples,template,include)
 % Estimates the Bayesian method for replay quantification
 %
 % USAGE
@@ -21,7 +21,7 @@ function [replayScore_bayes_linearWeighted, replayScore_bayes_radon] = replay_Ba
 %
 % OUTPUTS 
 % 
-% replayScore_Bayes - rank order correlations w/ template for each event
+% bayesRadon - integral under the line of best fit
 %
 % HELP
 %
@@ -35,6 +35,7 @@ function [replayScore_bayes_linearWeighted, replayScore_bayes_radon] = replay_Ba
 % the Free Software Foundation; either version 2 of the License, or
 % (at your option) any later version.
 
+nBinsThresh = 5; % the minimum number of bins, per event, to analyze event (binSize * nBinsThresh = total event duration)
 binSize = .01;
 overlap = 1;
 spkmat = bz_SpktToSpkmat(spikes.times,'overlap',overlap,'binSize',binSize * overlap); % converts spike timestamps into matrix format
@@ -50,8 +51,18 @@ for event = 1:size(ripples.timestamps,1)
     ts = ripples.timestamps(event,:); % gets start/stop timestamp of ripple event
     [data counts] = process_replayData(spkmat, ts, keep, binSize); % processing func to get out the 'event' using common FR heuristics
     
-
+    if size(data,1) >= nBinsThresh
     [Pr, prMax] = placeBayes(data(:,keep), template(keep,:), spkmat.dt); % generate posterior probability matrix using template and event FRs
-    [replayScore_bayes_linearWeighted(event),outID] = makeBayesWeightedCorr1(Pr,ones(size(Pr,1),1)); % linear weight correlation method of quantification (Grosmark/Buzsaki 2016)
-    [slope_hpc(event),replayScore_bayes_radon(event)] = Pr2Radon(Pr'); % Radon transform method of quantification (Davidson/Frank 2009)   
+    [bayesLinearWeighted(event),outID] = makeBayesWeightedCorr1(Pr,ones(size(Pr,1),1)); % linear weight correlation method of quantification (Grosmark/Buzsaki 2016)
+    [slope_hpc(event),bayesRadon(event)] = Pr2Radon(Pr'); % Radon transform method of quantification (Davidson/Frank 2009)   
+    end
+    % extra data to send up
+    nCells(event) = sum(sum(counts(:,keep))>0);
+    nSpks(event) = sum(sum(counts(:,keep)));
 end
+
+% create data struct to return
+replayScores.bayesLinearWeighted = bayesLinearWeighted;
+replayScores.bayesRadon = bayesRadon;
+replayScores.nCells = nCells;
+replayScores.nSpks = nSpks;

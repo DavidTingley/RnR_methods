@@ -21,7 +21,10 @@ function [replayScores] = replay_Bayesian(spikes,ripples,template,include)
 %
 % OUTPUTS 
 % 
-% todo
+% bayesRadon - integral under the line of best fit, using the Radon
+%              transform (Davidson 2009)
+% bayesLinearWeighted - linear weighted correlation of the posterior
+%              probability matrix (Grosmark 2016)
 %
 % HELP
 %
