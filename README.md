@@ -17,6 +17,8 @@ Some of these methods and tests were described in <a href="" target="_blank">Tin
 Type 'help ReactStrength' for mor info
 
 ## Replay
+- 'replay_Bayesian' uses the Bayesian method (Zhang et al., 1998) to quantify replay scores when given an average firing rate template and a set of candidate replay events.  It returns both the maximum integral under the line of best fit, using the Radon transform (Davidson et al., 2009) and the linear weighted correlation of the posterior probability matrix (Wu & Foster 2014). 
+-'replay_RankOrder' uses the rank order correlation (Foster & Wilson 2006) to quantify replay scores when given an average firing rate template and a set of candidate replay events.  
 
 ## Compare
 - 'compareReplayMethods', to compare different reactivation methods (Fig. 3 in <a href="" target="_blank">Tingley&Peyrache</a>)
