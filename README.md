@@ -1,6 +1,6 @@
 # RnR_methods
 > A toolbox for detecting/quantifying/comparing reactivation and replay in neural data.
-Some of these methods and tests were described in <a href="" target="_blank">Tingley & Peyrache (2019)</a>
+Some of these methods and tests were described in <a href="https://doi.org/10.1098/rstb.2019.0231" target="_blank">Tingley & Peyrache (2019)</a>
 
 - [Installation](#installation)
 - [Reactivation](#Reactivation)
