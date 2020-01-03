@@ -52,12 +52,15 @@ end
 for event = 1:size(ripples.timestamps,1)
     
     ts = ripples.timestamps(event,:); % gets start/stop timestamp of ripple event
-    [data counts] = process_replayData(spkmat, ts, keep, binSize); % processing func to get out the 'event' using common FR heuristics
+    [data,counts] = process_replayData(spkmat, ts, keep, binSize); % processing func to get out the 'event' using common FR heuristics
     
     if size(data,1) >= nBinsThresh
-    [Pr, prMax] = placeBayes(data(:,keep), template(keep,:), spkmat.dt); % generate posterior probability matrix using template and event FRs
-    [bayesLinearWeighted(event),outID] = makeBayesWeightedCorr1(Pr,ones(size(Pr,1),1)); % linear weight correlation method of quantification (Grosmark/Buzsaki 2016)
-    [slope_hpc(event),bayesRadon(event)] = Pr2Radon(Pr'); % Radon transform method of quantification (Davidson/Frank 2009)   
+        % generate posterior probability matrix using template and event FRs
+        [Pr, prMax] = placeBayes(data(:,keep), template(keep,:), spkmat.dt); 
+        % linear weight correlation method of quantification (Grosmark/Buzsaki 2016)
+        [bayesLinearWeighted(event),outID] = makeBayesWeightedCorr1(Pr,ones(size(Pr,1),1)); 
+        % Radon transform method of quantification (Davidson/Frank 2009)   
+        [slope_hpc(event),bayesRadon(event)] = Pr2Radon(Pr'); 
     end
     % extra data to send up
     nCells(event) = sum(sum(counts(:,keep))>0);

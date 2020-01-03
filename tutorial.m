@@ -24,7 +24,6 @@ offsets_rate = {round(sigmoid(1:100,50,.09) .* 100)... % Dupret style, reward/en
           1:100 ...                                    % linearly spaced PFs
           randi(100,1,100)};                           % randomly spaced PFs
 
-%A/ I've pre-allocated rateMaps. Sorry, can't let it happen :D
 rateMaps = cell(length(offsets_rate),1);
 
 for o = 1:length(offsets_rate)
