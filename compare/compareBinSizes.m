@@ -59,12 +59,14 @@ for rate =1:maxRate % 1 to 50 Hz
         title('place fields')
         xlabel('position')
         ylabel('cell #')
-
+        set(gca,'YTick',[1 2])
+        
         subplot(2,2,2)
         imagesc([zeros(50,2); [1 1]; zeros(50,2)]')
         title('ripple event')
         xlabel('time (ms')
         ylabel('cell #')
+        set(gca,'YTick',[1 2])
         
         subplot(2,1,2)
         plot(decodedPos(25,:))
