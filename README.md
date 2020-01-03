@@ -13,8 +13,8 @@ Some of these methods and tests were described in <a href="https://doi.org/10.10
 - Run `addpath(genpath(pwd))` from the \RnR_methods directory
 
 ## Reactivation
-- `ReactStrength`, to compute reactivation (i.e. 0-lag neuronal correlation) with PCA or ICA.
-Type 'help ReactStrength' for mor info
+- `reactStrength`, to compute reactivation (i.e. 0-lag neuronal correlation) with PCA or ICA.
+Type 'help ReactStrength' for mor info.
 
 ## Replay
 - `replay_Bayesian` uses the Bayesian method (Zhang et al., 1998) to quantify replay scores when given an average firing rate template and a set of candidate replay events.  It returns both the maximum integral under the line of best fit, using the Radon transform (Davidson et al., 2009) and the linear weighted correlation of the posterior probability matrix (Wu & Foster 2014). 
