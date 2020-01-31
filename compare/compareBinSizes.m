@@ -51,6 +51,7 @@ for rate =1:50 % 1 to 50 Hz
     if rate == 25 % from paper, see what happens w/ 25Hz cell
         subplot(2,2,1)
         imagesc(r)
+        colorbar()
         title('place fields')
         xlabel('position')
         ylabel('cell #')
