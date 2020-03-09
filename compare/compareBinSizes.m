@@ -11,9 +11,6 @@
 % the Free Software Foundation; either version 2 of the License, or
 % (at your option) any later version.
 
-%Parameters
-maxRate = 50; %max fr
-maxBin = 1000; %in ms
 
 %% first, let's make some place fields.
 offsets_rate = {round(sigmoid(1:100,50,.09) .* 100)... % reward/end over-representation
@@ -26,9 +23,8 @@ for o = 1:length(offsets_rate)
     end
 end
 
-decodedPos = zeros(maxRate,maxBin);
 
-for rate =1:maxRate % 1 to 50 Hz
+for rate =1:50 % 1 to 50 Hz
     r = rateMaps{2}([20 80],:);
     r(1,:) = rate*minmax_norm(r(1,:));
     r(2,:) = 50*minmax_norm(r(2,:));
@@ -40,56 +36,40 @@ for rate =1:maxRate % 1 to 50 Hz
     cl = train(cl, r, 1:101);
     c=1; 
     for i=.001:.001:1
-        [predicted_labels,decision_values] = test(cl, [1 1]'/i);
+        [predicted_labels decision_values] = test(cl, [1 1]'/i);
         p(c,:)= decision_values;
         c=1+c;
     end
-    for i=1:maxBin
+    for i=1:1000
         pz(i,:)=zscore(p(i,:));
     end
-    for i=1:maxBin
-        [a(i),b(i)] = max(pz(i,:));
+    for i=1:1000
+        [a(i) b(i)] = max(pz(i,:));
     end
-    decodedPos(rate,:)= b;
+    bb(rate,:)= b;
     
     if rate == 25 % from paper, see what happens w/ 25Hz cell
-        figure(1),clf
         subplot(2,2,1)
         imagesc(r)
         colorbar()
         title('place fields')
         xlabel('position')
         ylabel('cell #')
-        set(gca,'YTick',[1 2])
-        
+
         subplot(2,2,2)
         imagesc([zeros(50,2); [1 1]; zeros(50,2)]')
         title('ripple event')
         xlabel('time (ms')
         ylabel('cell #')
-        set(gca,'YTick',[1 2])
         
         subplot(2,1,2)
-        plot(decodedPos(25,:))
+        plot(bb(25,:))
         ylabel('decoded position')
         xlabel('bin size (ms)')
     end
 end
 
-figure(2),clf
-subplot(1,2,1)
-    plot(r(1,:))
-    hold on
-    plot(r(2,:))
-    legend('cell #1','cell #2')
-    ylabel('Firing rate (Hz)')
-    xlabel('Position')
-subplot(1,2,2)
-    imagesc(decodedPos)
-    ylabel('Cell #1 peak rate (Hz)')
-    xlabel('bin size (ms)')
-    title('Decoded pos., cell #2 peak rate: 50Hz')
-    cb = colorbar;
-    cb.Label.String = 'Position';
+
+
 
 
