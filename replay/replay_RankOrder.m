@@ -27,7 +27,7 @@ function [replayScores] = replay_RankOrder(spikes,ripples,template,include)
 %
 % See bz_GetSpikes from the buzcode repo for help with the spikes/ripples
 %   data structures
-%
+
 % Copyright (C) 2019 Adrien Peyrache & David Tingley.
 %
 % This program is free software; you can redistribute it and/or modify
@@ -48,11 +48,13 @@ end
 
 for event = 1:size(ripples.timestamps,1)
     
-    ts = ripples.timestamps(event,:); % gets start/stop timestamp of ripple event
-    [data counts] = process_replayData(spkmat, ts, keep, binSize); % processing func to get out the 'event' using common FR heuristics
+    % gets start/stop timestamp of ripple event
+    ts = ripples.timestamps(event,:); 
+    % processing func to get out the 'event' using common FR heuristics
+    [data, counts] = process_replayData(spkmat, ts, keep, binSize); 
+    % find cells that fired and are in the 'include' array (i.e. active place cells)       
+    idx = intersect(find(sum(data)>0),keep);
     
-    
-    idx = intersect(find(sum(data)>0),keep); % find cells that fired and are in the 'include' array (i.e. active place cells)
     if length(idx) >= nCellsPerEvt
         [~,~,ord_template] = sort_cells(template(idx,:));
         [~,ord_firstSpk] = sortrows(data(:,idx)','descend');

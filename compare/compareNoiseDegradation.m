@@ -1,7 +1,8 @@
 % this script runs the rank-order correlation and Radon integral replay methods
 % on simulated data where replay events are systematically degraded, either
 % by removed 'real' spikes, or adding spurious 'noise' spikes.
-%
+
+
 % Copyright (C) 2019 Adrien Peyrache & David Tingley.
 %
 % This program is free software; you can redistribute it and/or modify
@@ -92,7 +93,8 @@ for nSub = 0:noiseBins-1 % subtract N 'real' spikes
 
                     %% discretize for radon integral here
                     for c = 1:size(rip,1)
-                       rip_smooth(c,:) = rebin(rip(c,:),round(size(rip,2)/radonBinSize)); % 15 ms bins default (change on line 9)
+                       rip_smooth(c,:) = rebin(rip(c,:),round(size(rip,2)/radonBinSize)); 
+                       % 15 ms bins default (change in 'parameters')
                     end
                     % radon transform
                     [Pr,prMax] = placeBayes(rip_smooth',rateMaps{oo},radonBinSize/1000);
