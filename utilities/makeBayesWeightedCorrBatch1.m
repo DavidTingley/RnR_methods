@@ -9,6 +9,7 @@ function [outR, outID] = makeBayesWeightedCorrBatch1(Pr, bID, varargin)
 %       in bID
 % Q (optional input) - Q is a linearized list of space X time-bin indeces
 %       can be precomputed to save on computational time.
+% Written by Andres Grosmark 2015
 
 outID = unique(bID);
 h = histc(bID, outID);

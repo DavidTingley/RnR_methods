@@ -10,7 +10,7 @@ function [Pr, prMax] = placeBayes(Cr, rateMap, binLength)
 %   temporalBin in Cr (note, ties go to the lower numbered bins as 
 %   consistent with the behavior of the second output of built in function
 %   'max')
-
+% Written by Andres Grosmark 2015
 
 Cr = Cr*binLength;
 rateMap = rateMap';

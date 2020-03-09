@@ -1,6 +1,6 @@
 function [outR, outID] = makeBayesWeightedCorr1(Pr, bID, varargin)
 %function [outR, outID] = makeBayesWeightedCorr1(Pr, bID, preComputedQ (optional))
-
+% Written by Andres Grosmark 2015
 outID = unique(bID);
 h = histc(bID, outID);
 if isempty(varargin)
