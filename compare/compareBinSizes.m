@@ -63,7 +63,7 @@ for rate =1:50 % 1 to 50 Hz
         ylabel('cell #')
         
         subplot(2,1,2)
-        plot(bb(25,:))
+        plot(bb(rate,:))
         ylabel('decoded position')
         xlabel('bin size (ms)')
     end

@@ -15,10 +15,10 @@ if nargin < 3, nit=100; end
 %-------------------------------------------------------------------
 
 [nn,M]=size(x);
-if nn>M,
-  x=x'; 
-  [garbage,M]=size(x);
-end
+% if nn>M,
+%   x=x'; 
+%   [garbage,M]=size(x);
+% end
 X=double(x)-mean(x')'*ones([1,M]);     %#ok<UDIM> % Remove the mean.
 
 X1=X;
